@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+
+<window id="stockFoxSidenav"
+		onload="stockfox.holdings.view_load();"
+		onunload="stockfox.holdings.holdings_close();"
+		windowtype="window:stockFoxNav"
+        title="StockFox View All Stocks" width="450" height="275" persist="width, height"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
+	<script src="globals.js"/>
+	<script src="util.js"/>
+	<script src="stockManager.js"/>
+	<script src="holdings.js"/>
+	<script src="persistence.js"/>
+	
+	<vbox flex="1">
+		<hbox pack="center" align="start" style="margin: 3px 0;">
+			<button label="More Details" id="stockfox-view-button" oncommand="stockfox.holdings.view_moreDetails();" disabled="true" />
+			<button label="Edit Holding" id="stockfox-editholding-button" oncommand="stockfox.holdings.edit_holding()" disabled="true" />
+		</hbox>
+		<label id="stockfox-view-update" value="" />
+        <tabbox id="stockfox-tabbox" flex="1">
+            <tabs>
+                <tab label="Stock List" onclick="stockfox.holdings.view_enableView()"/>
+                <tab label="My Portfolio" onclick="stockfox.holdings.view_enableView()"/>
+            </tabs>
+            <tabpanels flex="1" style="padding: 0px;">
+                <tabpanel>
+                        <listbox id="stockfox-stocklist-box" flex="1" style="margin: 0px;">
+                            <listitem label="Loading..."/>
+                        </listbox>
+                </tabpanel>
+                <tabpanel>
+                    <listbox id="stockfox-holdings-box" flex="1" style="margin: 0px; padding: 0px;"/>
+                </tabpanel>
+            </tabpanels>
+        </tabbox>
+	</vbox>
+	
+	  <script type="application/x-javascript">
+		stockfox.holdings.holdings_close = function() {
+			if ( stockfox.holdings.edited ) {
+				stockfox.globals.pSrv.setCharPref("lastupdate", (new Date()).getTime());
+			}
+		}
+    </script>
+</window>

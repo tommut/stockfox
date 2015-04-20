@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+
+<overlay id="stockOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script src="globals.js"/>
+	<script src="persistence.js"/>
+	<script src="util.js"/>
+	<script src="guiTicker.js"/>
+    <script src="toolbarTicker.js"/>
+	<script src="stockManager.js"/>
+	<script src="ticker.js"/>
+	<script src="prefListener.js"/>
+	
+	<script>       
+		window.addEventListener("load", tmpListener, true);
+        function tmpListener(event){
+            var myListener =  new stockfox.globals.globalPrefListener("extensions.stockfox.", 
+                                             stockfox.ticker.stockfox_prefListener);
+            myListener.register();
+            
+            stockfox.ticker.stockfox_init();
+            
+            window.removeEventListener("load", tmpListener, true);
+        }
+	</script>
+	
+	<broadcasterset id="mainBroadcasterSet">
+        <broadcaster 	id="stockfox-sidebar"
+						label="StockFox" 
+						autoCheck="false" 
+						group="sidebar" 
+						sidebarurl="chrome://stockfox/content/sidenav.xul" 
+						type="checkbox" 
+						oncommand="toggleSidebar('stockfox-sidebar');"/>
+    </broadcasterset>
+	
+	<keyset id="mainKeyset">
+		<key id="stockfox-sidebar-key" keycode="VK_F9" oncommand="toggleSidebar('stockfox-sidebar');"/>
+	</keyset>
+	
+	<!-- Firefox Tools Menu -->
+	<menupopup id="menu_ToolsPopup">
+		<menu id="stockfox-tools-menu" label="StockFox" 
+				accesskey="T" class="menuitem-iconic"
+				insertafter="devToolsSeparator">	
+			<menupopup>
+				<menuitem label="View stocks and portfolio..."
+						oncommand="stockfox.ticker.context_viewAll();"
+						accesskey="V" />
+				<menuitem label="Edit stocks and preferences..."
+						oncommand="window.openDialog('chrome://stockfox/content/edit.xul','StockFoxEditDialog','centerscreen, chrome', stockfox.ticker.oStockManager).focus();"
+						accesskey="E" />
+			</menupopup>
+		</menu>
+	</menupopup>
+	
+	<!-- Statusbar  -->
+	<statusbar id="status-bar" class="chromeclass-status">
+	    <statusbarpanel id="statusbar-stockfox"
+						style="min-width: 16.8em; overflow: visible;"
+						tooltip="stockfox-tooltip" 
+						ondblclick=""
+						onmouseover="stockfox.ticker.stockfox_mouseover()"
+						onmouseout="stockfox.ticker.stockfox_mouseout()"
+						insertbefore="statusbar-updates"
+						label="Loading Stocks..." collapsed="false"
+						context="stockfox-context-menu"
+					 	oncontextmenu="stockfox.ticker.contextPopup(this)" symbol="" />
+	</statusbar>
+	
+	<!-- Toolbar Element -->
+    <toolbox id="navigator-toolbox">
+        <toolbar id="stockfox-toolbar" toolbarname="StockFox Toolbar" accesskey="S"
+                 class="chromeclass-toolbar" context="toolbar-context-menu"
+                 hidden="false" persist="hidden">
+            <toolbaritem id="stockfox-toolbar-spacer" flex="0"/>
+            <toolbaritem id="stockfox-container" title="StockFox" align="center" 
+                         contextmenu="stockfox-context-menu" 
+                         oncontextmenu="stockfox.ticker.contextPopup(this)"
+                         onmouseover="stockfox.ticker.stockfox_mouseover()"
+                         onmouseout="stockfox.ticker.stockfox_mouseout()"
+                         collapsed="false"
+                         pack="start"
+                         flex="1">
+                    <hbox id="stockfox-toolbar-hbox" pack="end">
+                        <label id="stockfox-toolbar-label" value="Loading Stocks..." symbol="" 
+                               ondblclick="" 
+                               style="min-width: 16.8em; overflow: hidden;" />
+                    </hbox>
+            </toolbaritem>
+        </toolbar>
+    </toolbox>
+		
+	<!-- Sidebar -->
+	<menupopup id="viewSidebarMenu">
+		<menuitem key="stockfox-sidebar-key" observes="stockfox-sidebar"/>
+    </menupopup>
+		
+	<!-- Firefox Context Menu -->
+	<popups id="mainPopupSet">
+		<menupopup id="stockfox-context-menu" onpopuphiding="stockfox.ticker.contextHiding();">
+     		<menuitem label="View Details" style="font-weight: bold;" oncommand="stockfox.ticker.context_view()" />
+			<menuitem label="Edit stocks and preferences..." oncommand="window.openDialog('chrome://stockfox/content/edit.xul','StockFoxEditDialog','centerscreen, resizable,chrome').focus();" />
+			<menuitem label="View stocks and portfolio..." oncommand="stockfox.ticker.context_viewAll()" />
+			<menuseparator/>
+			<menuitem label="Hide this ticker" id="stockfox-context-hide" oncommand="stockfox.ticker.context_hide()" />
+			<menuitem id="stockfox-context-pause" label="Pause Rotation" oncommand="stockfox.ticker.context_pause()" />
+			<menuitem id="stockfox-context-continue" label="Continue Rotation" oncommand="stockfox.ticker.context_continue()" />
+			<menuitem id="stockfox-context-next" label="Show Next" oncommand="stockfox.ticker.context_showNext()" />
+			<menuitem id="stockfox-context-prev" label="Show Previous" oncommand="stockfox.ticker.context_showPrev()" />
+		</menupopup>
+        <!-- add tooltip for status bar -->
+        <tooltip id="stockfox-tooltip" noautohide="true" orient="horizontal" onpopupshowing="stockfox.ticker.stockfox_tooltip_loadList()" >
+            <vbox flex="1" style="overflow: auto;">
+                <label id="stockfox-view-update" value="" />
+                <hbox flex="1" align="center">
+                    <listbox rows="10" id="stockfox-view-symbols" flex="100">                        
+                    </listbox>    
+					<spacer flex="1"/>                
+                </hbox>
+            </vbox>
+        </tooltip>
+	</popups>
+</overlay>

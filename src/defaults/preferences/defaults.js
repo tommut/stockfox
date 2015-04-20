@@ -1,0 +1,15 @@
+pref("extensions.stockfox.speed", 3);
+pref("extensions.stockfox.toolbar", 100);
+pref("extensions.stockfox.color.up", "#006600");
+pref("extensions.stockfox.color.down", "#FF0000");
+pref("extensions.stockfox.color.neutral", "#000000");
+pref("extensions.stockfox.update", 300000);
+pref("extensions.stockfox.lastupdate", "noupdate");
+pref("extensions.stockfox.display.status", true);
+pref("extensions.stockfox.display.showDisplaySymbol", false);
+pref("extensions.stockfox.stocks", "");
+pref("extensions.stockfox.details.site", "http://finance.yahoo.com/q?s=$");
+pref("extensions.stockfox.quotes.site", "finance.yahoo.com");
+pref("extensions.stockfox.alerts.stocks", "");
+pref("extensions.stockfox.alerts.lastAlert", "");
+pref("extensions.stockfox.observeMarketClose", false);

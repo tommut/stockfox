@@ -1,0 +1,3 @@
+content	stockfox	jar:chrome/stockfox.jar!/content/
+
+overlay	chrome://browser/content/browser.xul	chrome://stockfox/content/overlay.xul

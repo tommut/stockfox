@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+
+<dialog buttons="cancel"
+        id="stockFoxVerifyDialog"
+		ondialogcancel="return true;"
+		onload="stockfox_verify_init();"
+        title="StockFox Verify" 
+		width="200" height="120" style="background: #FFC; cursor: wait;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
+	
+	<script src="globals.js"/>
+	<script src="persistence.js"/>
+	<script src="util.js"/>
+	<script src="stockManager.js"/>
+	<script>
+	<![CDATA[
+	
+		// Load
+		function stockfox_verify_init(){
+			if(window.arguments.length < 1 || window.arguments[0] == null){
+				alert("An error occurred!\nMissing Symbol.");
+				self.close();
+			} else{
+				setTimeout(function() { stockfox_verify(window.arguments[0]) }, 10);
+			}
+		}
+		
+		// Verify
+		function stockfox_verify(sSymbol){
+			var originalSymbol = sSymbol;
+			
+			// workaround for Yahoo.  The Dow Jones no longer allows yahoo to provide 
+			// this info via their web service for Dow ^DJI; so instead we must use the 
+			// 1/100 Dow symbol ^DJX and multiply by 100
+			if ( sSymbol == "^DJI" ) { 
+				sSymbol = "^DJX";
+			}
+			var oStock = null;
+			try{
+				// Get Stock
+				var quoteSite = stockfox.globals.pSrv.getCharPref( "quotes.site" );
+				if ( quoteSite == null || quoteSite.length == 0 ) {
+					quoteSite = "finance.yahoo.com";
+				}
+				var sUrl 		= "http://" + quoteSite + "/d/quotes.csv?s="+ sSymbol +"&f=snk1c6pe1";
+				var oRequest	= new XMLHttpRequest();
+					oRequest.open("GET", sUrl, false);
+				    oRequest.send("");
+				var	sResponse 	= oRequest.responseText;
+                var aStock      = sResponse.split(",");
+				var	oStock		= stockfox.utils.formatResponse(sResponse, true);
+				
+				oStock.symbol = originalSymbol;
+				sSymbol = originalSymbol;
+				if ( oStock.symbol == "^DJI" ) { 
+					oStock.name = "Dow Jones Industrial Average";
+				}
+				
+                var length      = aStock.length - 1;
+                // Strip Quotes and Trim
+				for(var i = 0; i < aStock.length; i++){
+					// Trim 
+					aStock[i] = aStock[i].replace(/^\s*|\s*$/g, ""); 
+					// Quotes
+					aStock[i] = aStock[i].replace(/^\"|\"$/g, "");
+				}
+                
+				if(aStock[length] != "N/A"){ // Could not verify
+					
+					opener.stockfox_edit_add(null, false, sSymbol);
+				} else{ // Verified
+					opener.stockfox_edit_add(oStock, true);
+				}
+				
+				self.close();
+				
+			} catch(err) { opener.stockfox_edit_add(oStock, false, sSymbol); }
+		}
+	]]>
+	</script>
+	
+	<vbox align="center" pack="center" flex="1">
+		<label value="Verifying Stock Symbol..." style="font-weight: bold;" />
+	</vbox>
+</dialog>

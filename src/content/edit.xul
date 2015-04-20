@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+
+<dialog buttons="cancel, accept"
+        id="stockFoxDialog"
+		ondialogaccept="stockfox_edit_verify(); return false;"
+        ondialogcancel="try{ if(opener != null)opener.focus(); } catch(e){} return true;"
+		onload="stockfox_edit_load();"
+        title="StockFox Edit" width="390" height="470"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
+	<script src="globals.js"/>
+	<script src="util.js"/>
+	<script src="stockManager.js"/>
+	<script src="holding.js"/>
+	<script src="edit.js"/>
+	<script src="persistence.js"/>
+	
+	
+	<vbox flex="1" style="overflow: auto;">
+		<tabbox id="stockfox-tabs" flex="1">
+			<tabs>
+				<tab label="Stocks" id="stockfox-stock-tab" />
+				<tab label="Display" id="stockfox-display-tab" />
+				<tab label="Stock Details" id="stockfox-site-tab" />
+			</tabs>
+			<tabpanels flex="1">
+				<!-- Add/Remove Stock Symbols -->
+				<tabpanel id="stockfox-stock-panel" orient="vertical" flex="1">
+					<hbox align="center" pack="start">
+						<textbox id="stockfox-add-field" />
+						<button label="Add Symbol" dlgtype="accept" />
+						<label value="Symbol Lookup" style="font-size: x-small; color: #000000; text-decoration: underline; cursor: pointer;" onclick="stockfox_edit_symbolLookup();" />
+					</hbox>
+					<spacer height="5" />
+					<hbox align="center">
+						<listbox rows="10" id="stockfox-edit-symbols"/>
+						<vbox align="center">
+							<button label="Edit/Holdings" id="stockfox-organize-button" oncommand="stockfox_edit_organize();" disabled="true" />
+							<button label="Remove" id="stockfox-remove-button" oncommand="stockfox_edit_remove();" disabled="true" />
+							<button label="Move Up" id="stockfox-moveup-button" oncommand="stockfox_edit_moveup();" disabled="true" />
+							<button label="Move Down" id="stockfox-movedown-button" oncommand="stockfox_edit_movedown();" disabled="true" />
+						</vbox>
+					</hbox>
+				</tabpanel>
+				<!-- Edit Stock Display -->
+				<tabpanel id="stockfox-display-panel" orient="vertical" flex="1">
+					<checkbox label="Show ticker in status bar" checked="true" id="stockfox-status-checkbox" /> 
+					<checkbox label="Hide/stop tickers when market is closed (after midnight, on weekends, and on holidays)" checked="true" id="stockfox-observeMarketClose-checkbox" /> 
+					<groupbox>
+						<caption label="Colors" />
+						<grid>
+							<columns>
+								<column />
+								<column />
+							</columns>
+							<rows>
+								<row align="center">
+									<label value="When stocks are up:" />
+									<colorpicker type="button" id="stockfox-up-color" color="#006600" /> 
+								</row>
+								<row><spacer height="3" /></row>
+								<row align="center">
+									<label value="When stocks are down:" />
+									<colorpicker type="button" id="stockfox-down-color" color="#FF0000" /> 
+								</row>
+								<row><spacer height="3" /></row>
+								<row align="center">
+									<label value="When stocks are even:" />
+									<colorpicker type="button" id="stockfox-neutral-color" color="#000000" /> 
+								</row>
+							</rows>
+						</grid>
+					</groupbox>
+                    <spacer height="7" />
+					<label value="Ticker Speed:" style="font-weight: bold;" />
+					<hbox align="center" pack="start">
+						<label value="Rotate each stock every" />
+						<textbox id="stockfox-rotate-field" size="2" value="3" />
+						<label value="seconds(s)" />
+					</hbox>
+					<spacer height="3" />
+					<label value="Stock Updates:" style="font-weight: bold;" />
+					<hbox align="center" pack="start">
+						<label value="Update all stocks every" />
+						<textbox id="stockfox-update-field" size="2" value="5" />
+						<label value="minute(s)" />
+					</hbox>
+                    <spacer height="3" />
+					<label value="Toolbar Scroll Speed:" style="font-weight: bold;" />
+					<hbox align="center" pack="start">
+						<label value="Move every" />
+						<textbox id="stockfox-speed-field" size="2" value="5" />
+						<label value="millisecond(s)" />
+					</hbox>
+				</tabpanel>
+				<!-- Sites -->
+				<tabpanel id="stockfox-site-panel" orient="vertical" flex="1">
+					<!--
+					<description>
+						Enter the Yahoo Finance stock site for the geography that you would like to retrieve stocks quotes from.  (Example: 
+						 "finance.yahoo.com", or "uk.finance.yahoo.com", or "de.finance.yahoo.com")
+					</description>
+					<textbox id="stockfox.quotes.site" value="finance.yahoo.com" />
+					<spacer height="7" />
+					-->
+					<description>
+						Enter the site you would like to use when you view the details about a stock.
+					</description>
+					<description style="font-weight: bold;">
+						Replace the stock symbol in the url with $.
+					</description>
+					<textbox id="stockfox.details.site" value="http://finance.yahoo.com/q?s=$" />
+					
+					<groupbox>
+						<description>
+						If you change the details site (to use Google Finance, for example), some stocks have different 
+						symbols depending on the provider.  Enable this option if you would like the ability to specify an
+						alternate "display site" symbol. 
+						</description>
+						<checkbox label="Allow editing of display site stock symbols" checked="false" id="stockfox-advanced-details-checkbox" /> 
+					</groupbox>					
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+		<spacer height="7" />
+		<hbox align="center" pack="end">
+			<button label="OK" oncommand="stockfox_edit_save(true); self.close();" />
+			<button label="Apply" oncommand="stockfox_edit_save(false);" />
+			<button dlgtype="cancel" label="Cancel" />
+		</hbox>
+	</vbox>
+</dialog>

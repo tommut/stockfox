@@ -1,0 +1,232 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+
+<dialog buttons="cancel, accept"
+        id="StockFoxEditHoldingDialog"
+		ondialogaccept="stockfox_holding_verify(); return false;"
+        ondialogcancel=""
+        title="StockFox Edit Holding"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
+	
+	<script src="globals.js"/>
+	<script src="util.js"/>
+	<script src="persistence.js"/>
+	<script src="stockManager.js"/>
+	
+    
+    <vbox flex="1">
+		<hbox style="padding-bottom:5px;">
+			<label id="stockfox_holding_name" value="Loading..." style="font-weight: bold;"/>
+			<separator flex="1"/>
+		</hbox>
+		<hbox style="padding-bottom:5px;">
+			<label id="stockfox_holding_symbol" value="" style="font-weight: bold;"/>
+			<separator flex="1"/>
+		</hbox>
+		<hbox style="padding-bottom:5px;">
+			<label id="stockfox_currentPrice" value="" style="font-weight: bold;"/>
+			<separator flex="1"/>
+		</hbox>
+		
+		<vbox style="padding-left:5px;" flex="1">
+			<vbox id="displayNamebox" flex="1">
+				<label value="Ticker Display Name:"/>
+				<textbox id="stockfox_displayName" type="text" maxlength="100" rows="1" cols="10"/>
+			</vbox>
+				
+			<vbox id="pBox" flex="1">
+				<label value="Quantity:"/>
+				<textbox id="stockfox_itemQuantity" type="text" maxlength="100" rows="1" cols="10"/>
+			</vbox>
+			
+			<vbox id="qBox" flex="1">
+				<label value="Average Purchase Price:"/>
+				<textbox id="stockfox_itemPrice" type="text" maxlength="100" rows="1" cols="10"/>
+			</vbox>
+			
+			<vbox id="qBox" flex="1">
+				<label value="Show alert when price reaches:"/>
+				<textbox id="stockfox_priceAlert" type="text" maxlength="100" rows="1" cols="10"/>
+			</vbox>
+			
+			<vbox id="qBox" flex="1">
+				<label id="stockfox_displaySymbol_label" value="Symbol for Stock Display:"/>
+				<textbox id="stockfox_displaySymbol" type="text" maxlength="100" rows="1" cols="10"/>
+			</vbox>
+		</vbox>
+	</vbox>
+    
+    <script type="application/x-javascript">
+    var stock = window.arguments[0];
+	var currentPrice = 0;
+	document.getElementById("stockfox_holding_symbol").setAttribute("value", stock.symbol);
+    document.getElementById("stockfox_holding_name").setAttribute("value", stock.name);
+	
+	var quantity = 0;
+	if ( stock.quantity != undefined ) {
+		quantity = stock.quantity;
+	}
+    document.getElementById("stockfox_itemQuantity").setAttribute("value", quantity);
+	
+	var displayName = stock.symbol;
+	if ( stock.displayName != undefined ) {
+		displayName = stock.displayName;
+	}
+	document.getElementById("stockfox_displayName").setAttribute("value", displayName);
+	
+	var price = 0;
+	if ( stock.price != undefined ) {
+		price = stock.price;
+	}
+    document.getElementById("stockfox_itemPrice").setAttribute("value", price);
+	
+	var displaySymbol = 0;
+	if ( stock.displaySymbol != undefined ) {
+		displaySymbol = stock.displaySymbol;
+	    document.getElementById("stockfox_displaySymbol").setAttribute("value", displaySymbol);
+	}
+	else { 
+  	    document.getElementById("stockfox_displaySymbol").setAttribute("value", stock.symbol);
+	}
+	
+	var priceAlert = 0;
+	if ( stock.priceAlert != undefined ) {
+		priceAlert = stock.priceAlert;	  
+		if ( priceAlert &lt; 0 ) {
+			priceAlert = priceAlert * -1;
+		}
+	}
+	document.getElementById("stockfox_priceAlert").setAttribute("value", priceAlert);
+
+	var showSymbol = stockfox.globals.pSrv.getBoolPref("display.showDisplaySymbol");
+	if ( !showSymbol ) {
+		document.getElementById("stockfox_displaySymbol_label").setAttribute("hidden", "true");			
+		document.getElementById("stockfox_displaySymbol").setAttribute("hidden", "true");			
+	}
+	
+	setTimeout(function() { getStock(stock.symbol) }, 1);
+	
+	
+	function getStock(symbol) {
+		var oStock = null;
+		try{
+			// Get Stock
+			var quoteSite = stockfox.globals.pSrv.getCharPref( "quotes.site" );
+			if ( quoteSite == null || quoteSite.length == 0 ) {
+				quoteSite = "finance.yahoo.com";
+			}
+			
+					var rand			= "&amp;rand=" + Math.round(Math.random() * 200);
+			var sUrl 		= "http://" + quoteSite + "/d/quotes.csv?s="+ symbol +"&amp;f=snk1c6pt1d1"+ rand; 
+			var oRequest	= new XMLHttpRequest();
+				oRequest.open("GET", sUrl, false);
+			    oRequest.send("");
+			var	sResponse 	= oRequest.responseText;
+	        var aStock      = sResponse.split(",");
+			var	oStock		= stockfox.utils.formatResponse(sResponse, true);
+	        
+			if ( oStock != null ) {
+				currentPrice = oStock.price;
+				document.getElementById("stockfox_currentPrice").setAttribute("value", "Current price: " + currentPrice);
+			}
+		}
+		catch( e ) {
+			//alert( e.message );
+		}
+               
+	
+	}
+    
+    function stockfox_holding_verify(){
+        var price = document.getElementById("stockfox_itemPrice");
+        var quantity = document.getElementById("stockfox_itemQuantity");
+		var displayName = document.getElementById("stockfox_displayName");
+		var displaySymbol = document.getElementById("stockfox_displaySymbol");
+		var priceAlert = document.getElementById("stockfox_priceAlert");
+        var error = false;
+		 
+        if(priceAlert.value == "" || isNaN(priceAlert.value)){
+            alert("Invalid Entry for Price Alert");
+            error = true;			
+        } else{
+			stock.priceAlert = priceAlert.value;
+			if ( currentPrice != 0 ) {
+				if ( parseFloat(stock.priceAlert) &lt; parseFloat(currentPrice) ) {
+					stock.priceAlert = -1 * stock.priceAlert;
+				}
+			}
+        }
+		
+		if(displaySymbol.value == "" ){
+			stock.displaySymbol = stock.symbol;
+        } else{
+			stock.displaySymbol = displaySymbol.value;
+        }
+		
+        
+        if(price.value == "" || isNaN(price.value)){
+            alert("Invalid Entry for Price");
+            error = true;
+        } else{
+			stock.price = price.value;
+        }
+		
+		if ( displayName != "" ) { 
+			stock.displayName = displayName.value;
+		}
+		else {
+			stock.displayName = stock.symbol;
+		}
+        
+        if(quantity.value == "" || isNaN(quantity.value)){
+            alert("Invalid Entry for Quantity");
+            error = true;
+        } else{
+			stock.quantity = quantity.value;
+        }
+        
+        if (error == false){
+			stockfox.persistence.updateStock( stock );
+			
+			// remove any alerts
+			var stockAlertPref = stockfox.globals.pSrv.getCharPref("alerts.stocks");
+			if ( stockAlertPref != null ) {
+				var stockAlerts = stockAlertPref.split(",");
+				for ( var i = 0; i &lt; stockAlerts.length; i++ ) { 
+					var stockAlert = stockAlerts[i];
+					if ( stockAlert == stock.symbol ) { 
+						stockfox.utils.removeElementByIndex( stockAlerts, i );
+						stockfox.globals.pSrv.setCharPref("alerts.stocks", stockAlerts.join());
+						break;
+					}
+				}
+			}
+		
+            try{
+    			if(opener){
+					if ( opener.stockfox.holdings.view_refreshList != undefined ) { 
+	    				opener.focus();
+	                    opener.stockfox.holdings.view_refreshList(-1);
+					}
+					else { 
+						var windowManager = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService();
+						var windowManagerInterface = windowManager.QueryInterface(Components.interfaces.nsIWindowMediator);
+						var topWindow = windowManagerInterface.getMostRecentWindow("window:stockFoxNav");	 
+						if (topWindow) {
+							topWindow.stockfox.holdings.view_refreshList(-1);
+						}
+					}
+                }
+    		} catch(err){alert(err)}
+    		
+            self.close();
+            
+    		return true;
+        } else{
+            return false;
+        }
+    }
+    
+    </script>
+    
+</dialog>
