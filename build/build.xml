@@ -1,0 +1,74 @@
+<project name="stockfox" default="createxpi">
+	<tstamp />
+	
+	<property name="thunderbirdDirectory" 	
+		value="C:\Documents and Settings\tommut\Application Data\Thunderbird\Profiles\xi6rnql6.reminderfox\extensions\{ada4b710-8346-4b82-8199-5de2b400a6ae}\chrome"/>
+	
+	<property name="FF3Directory" 	
+		value="C:\Documents and Settings\tommut\Application Data\Mozilla\Firefox\Profiles\fp1fz9bg.rf\extensions\{d39a0050-191f-11df-8a39-0800200c9a66}\chrome"/>
+		
+	<property name="stockfoxReleaseVersion" value="1.4"/>
+		
+	<delete file="stockfox.jar"/>
+		
+	<target name="createFF3jar">	
+		<zip destfile="stockfox.jar" basedir="../src" includes="content/**,skin/**,locale/**"/>
+		<copy todir="${FF3Directory}" failonerror="true" overwrite="false">
+			<fileset dir="." includes="stockfox.jar" />
+		</copy>
+	</target>
+	
+	<target name="createjarTBird">	
+		<zip destfile="stockfox.jar" basedir="../src" includes="content/**,skin/**,locale/**"/>
+		<copy todir="${thunderbirdDirectory}" failonerror="true" overwrite="false">
+			<fileset dir="." includes="stockfox.jar" />
+		</copy>
+	</target>
+	
+	<target name="createxpi" depends="createFF3jar, createjarTBird">
+			<zip destfile="../downloads/stockfox-development.xpi">
+				<zipfileset dir="." includes="stockfox.jar" prefix="chrome"/>
+				<zipfileset dir="../src" includes="install.rdf, install.js,chrome.manifest,defaults/**,components/**,readme.txt,license.txt"/>
+			</zip>
+		</target>
+	
+	<target name="createxpiForRelease" depends="createxpi">
+		<zip destfile="../downloads/stockfox-${stockfoxReleaseVersion}.xpi">
+			<zipfileset dir="." includes="stockfox.jar" prefix="chrome"/>
+			<zipfileset dir="../src" includes="install.rdf, install.js,chrome.manifest,defaults/**,components/**,readme.txt,license.txt"/>
+		</zip>
+	</target>
+	
+	<target name="killFirefox"  >
+		<exec executable="taskkill" spawn="true">	
+			<arg value="/f"/>
+			<arg value="/im"/>
+			<arg value="firefox.exe"/>	 
+		</exec>
+
+	</target>
+	
+	<target name="deletestockfoxJar" >
+		<delete file="${FF3Directory}/stockfox.jar"/>
+	</target>
+	
+	<target name="killThunderbird"  >
+		<exec executable="taskkill" spawn="false">	
+			<arg value="/f"/>
+			<arg value="/im"/>
+			<arg value="thunderbird.exe"/>	 
+		</exec>
+	</target>
+	
+	<target name="launchFirefox" depends="killFirefox,deletestockfoxJar,createFF3jar"  >
+		<exec executable="ff.bat" spawn="true">		 
+		</exec>
+	</target>
+	
+	<target name="launchThunderbird" depends="killThunderbird,createjarTBird"  >
+		<exec executable="tb.bat" spawn="true">		 
+		</exec>
+	</target>
+
+
+</project>
