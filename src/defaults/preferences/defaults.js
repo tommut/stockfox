@@ -10,6 +10,8 @@ pref("extensions.stockfox.display.showDisplaySymbol", false);
 pref("extensions.stockfox.stocks", "");
 pref("extensions.stockfox.details.site", "http://finance.yahoo.com/q?s=$");
 pref("extensions.stockfox.quotes.site", "finance.yahoo.com");
+pref("extensions.stockfox.quotes.detailsFlags", "snl1c1pt1d1");
 pref("extensions.stockfox.alerts.stocks", "");
 pref("extensions.stockfox.alerts.lastAlert", "");
 pref("extensions.stockfox.observeMarketClose", false);
+pref("extensions.stockfox.firstrun", true);

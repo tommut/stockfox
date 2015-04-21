@@ -1,3 +1,6 @@
 content	stockfox	jar:chrome/stockfox.jar!/content/
 
 overlay	chrome://browser/content/browser.xul	chrome://stockfox/content/overlay.xul
+
+skin	stockfox	classic/1.0	skin/
+style	chrome://global/content/customizeToolbar.xul	chrome://stockfox/skin/overlay.css

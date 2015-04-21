@@ -54,6 +54,7 @@ stockfox.persistence.setUnicodePref = function(prefName,prefValue) {
 stockfox.persistence.getSavedStocks = function() {
 	var stocks = stockfox.persistence.getUnicodePref( "stocks" );
 	if ( stocks == null || stocks.length == 0 ) {
+		// set up default list of stocks on new install
 		var stockArr = new Array();		
 		var oStock	= new stockfox.stockManager.Stock();
 	            oStock.symbol			= "^GSPC"
@@ -63,19 +64,26 @@ stockfox.persistence.getSavedStocks = function() {
 	            oStock.priceChange		= 1.22;
 	            oStock.previousClose	= 1.12;
 	            oStock.lastUpdate		= (new Date()).getTime();
-	
 		stockArr[0] = oStock;
 		
-		var oStock	= new stockfox.stockManager.Stock();
-	            oStock.symbol			= "YHOO"
-	            oStock.name	 			= "Yahoo! Inc";
+        oStock	= new stockfox.stockManager.Stock();
+	            oStock.symbol			= "^DJI"
+	            oStock.name	 			= "Dow Jones Industrial Average";
+	            oStock.displayName	 	= "Dow Jones";
 	            oStock.stockPrice		= 88.12;
 	            oStock.priceChange		= 1.22;
 	            oStock.previousClose	= 85.12;
 	            oStock.lastUpdate		= (new Date()).getTime();
-
-		
 		stockArr[stockArr.length] = oStock;
+		
+		var oStock	= new stockfox.stockManager.Stock();
+	        oStock.symbol			= "YHOO"
+	        oStock.name	 			= "Yahoo! Inc";
+	        oStock.stockPrice		= 88.12;
+	        oStock.priceChange		= 1.22;
+	        oStock.previousClose	= 85.12;
+	        oStock.lastUpdate		= (new Date()).getTime();
+	    stockArr[stockArr.length] = oStock; 	
 		
 		// JSON available in FF 3.5 and later
 		var stockString = JSON.stringify(stockArr);

@@ -138,7 +138,6 @@ stockfox.globals.toolbarTicker = function(bStockManager){
     this.buildLabel = function(oStock){
         // Build and return a label than can be appended to the stock list
         var label = document.createElement("label");
-
         var sValue = oStock.displayName +" "+ oStock.price +" ( "+ oStock.change +" / "+ oStock.changePercent +"%)   ";
 		label.setAttribute("value", sValue);
         label.setAttribute("symbol", oStock.symbol);

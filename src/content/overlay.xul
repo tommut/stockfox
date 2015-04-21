@@ -9,6 +9,7 @@
 	<script src="stockManager.js"/>
 	<script src="ticker.js"/>
 	<script src="prefListener.js"/>
+	<script src="overlay.js"/>
 	
 	<script>       
 		window.addEventListener("load", tmpListener, true);
@@ -17,7 +18,8 @@
                                              stockfox.ticker.stockfox_prefListener);
             myListener.register();
             
-            stockfox.ticker.stockfox_init();
+            stockfox.overlay.initialize();
+           // stockfox.ticker.stockfox_init();
             
             window.removeEventListener("load", tmpListener, true);
         }
@@ -53,19 +55,25 @@
 		</menu>
 	</menupopup>
 	
-	<!-- Statusbar  -->
-	<statusbar id="status-bar" class="chromeclass-status">
-	    <statusbarpanel id="statusbar-stockfox"
-						style="min-width: 16.8em; overflow: visible;"
+	  <!-- toolbar button -->
+  <toolbarpalette id="BrowserToolbarPalette">
+  		<toolbarbutton id="sfToolbar"/>
+  </toolbarpalette>
+  
+    <toolbarbutton id="sfToolbar" image="chrome://stockfox/skin/icon.png" tooltiptext="Open StockFox" 
+       class="toolbarbutton-1 chromeclass-toolbar-additional" 
 						tooltip="stockfox-tooltip" 
 						ondblclick=""
 						onmouseover="stockfox.ticker.stockfox_mouseover()"
 						onmouseout="stockfox.ticker.stockfox_mouseout()"
-						insertbefore="statusbar-updates"
-						label="Loading Stocks..." collapsed="false"
+						label="StockFox" 
+						title="StockFox"
 						context="stockfox-context-menu"
-					 	oncontextmenu="stockfox.ticker.contextPopup(this)" symbol="" />
-	</statusbar>
+					 	oncontextmenu="stockfox.ticker.contextPopup(this)" 
+					 	symbol="" >
+			<label id="stockfox_label" value="StockFox"/>		
+	</toolbarbutton>
+  
 	
 	<!-- Toolbar Element -->
     <toolbox id="navigator-toolbox">

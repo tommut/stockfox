@@ -1,6 +1,6 @@
 	
 stockfox.globals.stockFox_lastStatusBarClick = new Date().getTime();
-stockfox.globals.handleClick = function(event, symbol) { 
+stockfox.globals.handleClick = function(event, symbol, obj) { 
 	if (event.button==1) { 
 		stockfox.ticker.context_showNext();
 		return;
@@ -9,6 +9,33 @@ stockfox.globals.handleClick = function(event, symbol) {
 	if ( event.button != 0 &&  event.button != 1 ) {
 		return;
 	}
+
+	var currentClickTime = new Date().getTime();
+	if ( stockfox.globals.stockFox_lastStatusBarClick != null &&  
+		( (currentClickTime - stockfox.globals.stockFox_lastStatusBarClick ) < 700 ) ) {
+		// double click
+		if (event.button==0) {
+			stockfox.ticker.stockfox_viewDetails (symbol);
+		}
+    }
+	else {
+//		if (event.button==0) stockfox.ticker.context_showNext(); 
+//		if (event.button==1) stockfox.ticker.context_showPrev();
+
+	}
+	stockfox.globals.stockFox_lastStatusBarClick = currentClickTime;
+}
+
+stockfox.globals.handleDblClick = function(event, symbol) { 
+	if (event.button==1) { 
+		stockfox.ticker.context_showNext();
+		return;
+	}
+	
+	if ( event.button != 0 &&  event.button != 1 ) {
+		return;
+	}
+
 
 	var currentClickTime = new Date().getTime();
 	if ( stockfox.globals.stockFox_lastStatusBarClick != null &&  
@@ -125,8 +152,7 @@ stockfox.globals.guiTicker = function(bStockManager){
 	
 	this.change = function(oStock, stopIfMarketClosed){
         var oTicker;
-        oTicker	= document.getElementById("statusbar-stockfox");
-		
+        oTicker	= document.getElementById("sfToolbar");
 		if(oTicker != null){
 			window.clearTimeout(this.rotate);
 			// Get String
@@ -134,20 +160,26 @@ stockfox.globals.guiTicker = function(bStockManager){
 			
 			// Update Label
             oTicker.setAttribute("label", sValue);
+            var sfLabel	= document.getElementById("stockfox_label");
+            sfLabel.value = sValue;
 			oTicker.setAttribute("symbol", oStock.symbol);
             // Removes tooltiptext in case of network loss/regain, thanks Tom
             oTicker.removeAttribute("tooltiptext");
 			oTicker.setAttribute("tooltip", "stockfox-tooltip");
 			
 			oTicker.removeAttribute("onclick");
-			oTicker.setAttribute("onclick", "stockfox.globals.handleClick( event, this.getAttribute('symbol') )");
+			oTicker.setAttribute("onclick", "stockfox.globals.handleClick( event, this.getAttribute('symbol'), this )");
+//			
+//			oTicker.removeAttribute("ondblclick");
+//			oTicker.setAttribute("ondblclick", "stockfox.globals.handleDblClick( event, this.getAttribute('symbol') )");
+//			
 			
 			
 			var isMarketClosed = this.manager.isMarketClosedCurrently();
 			if ( stopIfMarketClosed && isMarketClosed ) {
 				oTicker.setAttribute("label", "Market is closed.");
+				sfLabel.value = "Market is closed.";
 			}
-			
 			// Set Colors
 			// if it's Saturday/Sunday, or after 2 am, but before 9:30 - no change
 			if ( isMarketClosed ) {

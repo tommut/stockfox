@@ -182,9 +182,12 @@ stockfox.utils.formatResponse = function(aResponse, ignoreName){
 // Send Error to tickers
 stockfox.utils.sendError = function(sMsg, iCode, sError){
 	// Status Bar
-	var oTicker	= document.getElementById("statusbar-stockfox");
+	var oTicker	= document.getElementById("sfToolbar");
 	if(oTicker != null){
 		oTicker.setAttribute("label", "ERROR: "+ iCode);
+		 var sfLabel	= document.getElementById("stockfox_label");
+         sfLabel.value = "ERROR: "+ iCode;
+		
 		oTicker.setAttribute("symbol", "");
 		oTicker.setAttribute("tooltiptext", sMsg);
 		oTicker.setAttribute("ondblclick", "alert('"+ sError +"');");
@@ -230,8 +233,12 @@ stockfox.utils.loadStocks = function(aStocks){
 				if ( quoteSite == null || quoteSite.length == 0 ) {
 					quoteSite = "finance.yahoo.com";
 				}
-    			oUri.spec		= "http://" + quoteSite + "/d/quotes.csv?s="+ sSymbols +"&f=snk1c6pt1d1"+ rand;   // d1t1 - last date and time
-				//uk.finance.yahoo.com  --  add in an option for that...  
+				
+				// http://finance.yahoo.com/d/quotes.csv?s=IBM&f=snl1c1pt1d1
+				var flags = stockfox.globals.pSrv.getCharPref("quotes.detailsFlags");	
+    			oUri.spec = "http://" + quoteSite + "/d/quotes.csv?s="+ sSymbols +"&f="+ flags + rand;   // d1t1 - last date and time
+    			
+    			//uk.finance.yahoo.com  --  add in an option for that...  
 				//ca.finance.yahoo.com   - maybe make it a dropdown?  If I could find a directory of countries
 				//de.finance.yahoo.com  - or localize it to whichever stock site?
     			var oChannel		= stockfox.globals.iSrv.newChannelFromURI(oUri).QueryInterface(Components.interfaces.nsIHttpChannel);

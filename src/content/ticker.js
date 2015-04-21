@@ -22,7 +22,10 @@ stockfox.ticker.stockfox_init = function(){
 		setTimeout(function() { stockfox.ticker.stockfox_load() }, 500);
 	}
 	// Show Status Bar Ticker
-	document.getElementById('statusbar-stockfox').setAttribute("collapsed", (!stockfox.globals.pSrv.getBoolPref("display.status")));
+	var toolbarBtn = document.getElementById('sfToolbar');
+	if ( toolbarBtn ) { 
+		toolbarBtn.setAttribute("collapsed", (!stockfox.globals.pSrv.getBoolPref("display.status")));
+	}
 }
 
 // Load all stocks
@@ -90,6 +93,7 @@ stockfox.ticker.gStockFox_contextTarget = null;
 stockfox.ticker.contextPopup = function(oTarget){
     stockfox.ticker.gStockFox_contextTarget	= true;
     stockfox.ticker.gStockFox_contextTarget = oTarget;
+    
     if(oTarget.id.substring(0,7) == "ticker_" || oTarget.id == "stockfox-container"){
         document.getElementById("stockfox-context-next").setAttribute("collapsed", true);
         document.getElementById("stockfox-context-prev").setAttribute("collapsed", true);

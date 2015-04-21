@@ -6,6 +6,7 @@ if(!stockfox.utils) stockfox.utils={};
 if(!stockfox.stockManager) stockfox.stockManager={};
 if(!stockfox.ticker) stockfox.ticker={};
 if(!stockfox.holdings) stockfox.holdings={};
+if(!stockfox.overlay) stockfox.overlay={};
 
 //IO service: needed for creating URI objects
 stockfox.globals.iSrv = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);

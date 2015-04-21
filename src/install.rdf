@@ -6,14 +6,15 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>{d39a0050-191f-11df-8a39-0800200c9a66}</em:id>
     <em:name>StockFox</em:name>
-    <em:version>1.3.2</em:version>
+    <em:version>1.4</em:version>
     <em:creator>Sean Kennedy and Tom Mutdosch</em:creator>
     <em:contributor>Tom Mutdosch</em:contributor>
 	<em:contributor>Jeremy Gillick</em:contributor>
     <em:description>Lightweight integration of a stock ticker into the browser</em:description>
     <em:iconURL>chrome://stockfox/content/images/icon.png</em:iconURL>
     <em:optionsURL>chrome://stockfox/content/edit.xul</em:optionsURL>
-
+	<em:unpack>true</em:unpack>	
+	<em:type>2</em:type>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- firefox -->

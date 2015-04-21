@@ -92,13 +92,6 @@ function stockfox_edit_save(andClose){
 		// advanced - show display symbol
 		stockfox.globals.pSrv.setBoolPref("display.showDisplaySymbol", document.getElementById("stockfox-advanced-details-checkbox").checked);
         
-        var sB = window.opener.document.getElementById("statusbar-stockfox");
-		
-        
-        if (sB != null){
-            sB.setAttribute("collapsed", !(stockfox.globals.pSrv.getBoolPref("display.status")));
-        }
-		
 		// Colors
 		stockfox.globals.pSrv.setCharPref("color.up", document.getElementById("stockfox-up-color").color);
 		stockfox.globals.pSrv.setCharPref("color.down", document.getElementById("stockfox-down-color").color);
